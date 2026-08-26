@@ -10,7 +10,10 @@ import com.questbase.backend.campaign.Campaign;
 import com.questbase.backend.campaign.CampaignAccessService;
 import com.questbase.backend.campaign.CampaignRepository;
 import com.questbase.backend.exception.ResourceNotFoundException;
+import com.questbase.backend.notes.npc.NpcNotes;
+import com.questbase.backend.notes.npc.NpcNotesRepository;
 import com.questbase.backend.npc.dto.CreateNpcRequest;
+import com.questbase.backend.npc.dto.NpcDetailsResponse;
 import com.questbase.backend.npc.dto.NpcQuestResponse;
 import com.questbase.backend.npc.dto.NpcResponse;
 import com.questbase.backend.relationship.questnpc.QuestNpc;
@@ -23,6 +26,7 @@ public class NpcService {
     private final CampaignAccessService campaignAccessService;
     private final CampaignRepository campaignRepository;
     private final NpcRepository npcRepository;
+    private final NpcNotesRepository npcNotesRepository;
     private final QuestNpcRepository questNpcRepository;
 
     public NpcService(
@@ -30,16 +34,18 @@ public class NpcService {
         CampaignAccessService campaignAccessService,
         CampaignRepository campaignRepository,
         NpcRepository npcRepository,
+        NpcNotesRepository npcNotesRepository,
         QuestNpcRepository questNpcRepository
     ) {
         this.authService = authService;
         this.campaignAccessService = campaignAccessService;
         this.campaignRepository = campaignRepository;
         this.npcRepository = npcRepository;
+        this.npcNotesRepository = npcNotesRepository;
         this.questNpcRepository = questNpcRepository;
     }
 
-    public NpcResponse getNpcById(Long id) {
+    public NpcDetailsResponse getNpcById(Long id) {
         User currentUser = authService.getCurrentUser();
 
         Npc npc = npcRepository.findById(id)
@@ -50,7 +56,12 @@ public class NpcService {
             currentUser.getId()
         );
 
-        return toResponse(npc);
+        NpcNotes notes = npcNotesRepository.findByNpcIdAndUserId(
+            npc.getId(), 
+            currentUser.getId()
+        ).orElse(null);
+
+        return NpcDetailsResponse.from(npc, notes);
     }
 
     public List<NpcResponse> getAllNpcs() {
@@ -59,7 +70,7 @@ public class NpcService {
         List<Npc> npcs = npcRepository.findByCampaignUser(currentUser);
 
         return npcs.stream()
-            .map(npc -> toResponse(npc))
+            .map(npc -> NpcResponse.from(npc))
             .toList();
     }
 
@@ -84,7 +95,7 @@ public class NpcService {
             .build();
 
         Npc savedNpc = npcRepository.save(npc);
-        return toResponse(savedNpc);
+        return NpcResponse.from(savedNpc);
     }
 
     public List<NpcResponse> getNpcsByCampaignId(
@@ -108,11 +119,11 @@ public class NpcService {
         }
 
         return npcs.stream()
-            .map(npc -> toResponse(npc))
+            .map(npc -> NpcResponse.from(npc))
             .toList();
     }
 
-    public NpcResponse updateNpc(
+    public NpcDetailsResponse updateNpc(
         Long id,
         CreateNpcRequest request
     ) {
@@ -133,7 +144,13 @@ public class NpcService {
         npc.setAppearance(request.appearance());
 
         Npc savedNpc = npcRepository.save(npc);
-        return toResponse(savedNpc);
+
+        NpcNotes notes = npcNotesRepository.findByNpcIdAndUserId(
+            npc.getId(), 
+            currentUser.getId()
+        ).orElse(null);
+
+        return NpcDetailsResponse.from(savedNpc, notes);
     }
 
     public void deleteNpc(Long id) {
@@ -146,7 +163,7 @@ public class NpcService {
         npcRepository.delete(npc);
     }
 
-    public NpcResponse saveNpcNotesById(
+    public NpcDetailsResponse saveNpcNotesById(
         Long id,
         String notes
     ) {
@@ -160,7 +177,12 @@ public class NpcService {
 
         Npc savedNpc = npcRepository.save(npc);
 
-        return toResponse(savedNpc);
+        NpcNotes npcNotes = npcNotesRepository.findByNpcIdAndUserId(
+            npc.getId(), 
+            currentUser.getId()
+        ).orElse(null);
+
+        return NpcDetailsResponse.from(savedNpc, npcNotes);
     }
 
     // =========================================================================
@@ -189,20 +211,20 @@ public class NpcService {
     // HELPER FUNCTIONS
     // =========================================================================\
 
-    private NpcResponse toResponse(Npc npc) {
-        return NpcResponse.builder()
-            .id(npc.getId())
-            .name(npc.getName())
-            .description(npc.getDescription())
-            .level(npc.getLevel())
-            .status(npc.getStatus())
-            .role(npc.getRole())
-            .race(npc.getRace())
-            .occupation(npc.getOccupation())
-            .personality(npc.getPersonality())
-            .appearance(npc.getAppearance())
-            .notes(npc.getNotes())
-            .createdAt(npc.getCreatedAt())
-            .build();
-    }
+    // private NpcResponse toResponse(Npc npc) {
+    //     return NpcResponse.builder()
+    //         .id(npc.getId())
+    //         .name(npc.getName())
+    //         .description(npc.getDescription())
+    //         .level(npc.getLevel())
+    //         .status(npc.getStatus())
+    //         .role(npc.getRole())
+    //         .race(npc.getRace())
+    //         .occupation(npc.getOccupation())
+    //         .personality(npc.getPersonality())
+    //         .appearance(npc.getAppearance())
+    //         .notes(npc.getNotes())
+    //         .createdAt(npc.getCreatedAt())
+    //         .build();
+    // }
 }

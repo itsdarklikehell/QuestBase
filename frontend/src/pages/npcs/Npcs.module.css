@@ -72,3 +72,19 @@
   border-color: var(--qb-pixie-dust);
   color: var(--qb-pixie-dust);
 }
+
+.public {
+  padding: 0.2rem 0.7rem 0.2rem 0.5rem;
+  border-radius: 25px;
+  background-color: var(--qb-blue-slime-trans);
+  border: solid 2px var(--qb-blue-slime);
+  color: var(--qb-blue-slime);
+}
+
+.private {
+  padding: 0.2rem 0.7rem 0.2rem 0.5rem;
+  border-radius: 25px;
+  background-color: var(--qb-mana-star-trans);
+  border: solid 2px var(--qb-mana-star);
+  color: var(--qb-mana-star);
+}

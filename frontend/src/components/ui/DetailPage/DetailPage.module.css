@@ -25,17 +25,19 @@
 
 .green_icon:hover,
 .green_icon.active {
-  stroke: var(--qb-alien-green)
+  stroke: var(--qb-alien-green);
+  cursor: pointer;
 }
 
 .blue_icon:hover,
 .blue_icon.active {
-  stroke: var(--qb-blue-slime)
+  stroke: var(--qb-blue-slime);
+  cursor: pointer;
 }
-
 
 .red_icon {
   margin-top: -1px;
+  cursor: pointer;
 }
 .red_icon:hover {
   stroke: var(--qb-error-red)
@@ -117,6 +119,24 @@
   border-left: 2px solid var(--qb-blue-slime-trans);
   padding-left: 15px;
   max-width: 800px;
+}
+
+.section_header {
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section_header p {
+  color: var(--qb-alien-green);
+  font-size: 1.2rem;
+}
+
+.section_hr {
+  border-color: rgb(59, 59, 59);
+  border-top: 1px solid rgb(59, 59, 59);
+  height: 1px;
 }
 
 /* ========================================================================== */

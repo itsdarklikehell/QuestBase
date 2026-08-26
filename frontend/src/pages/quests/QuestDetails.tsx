@@ -23,6 +23,7 @@ export default function QuestDetails () {
   const { questId } = useParams()
   const navigate = useNavigate()
   const { activeCampaign } = useCampaign()
+  // TODO: fix to actual quest's campaign
   const [ owner ] = useState<boolean>(activeCampaign?.role === CampaignMemberRole.OWNER)
   const [ quest, setQuest ] = useState<Quest | null>(null)
   const [ notes, setNotes ] = useState<string>("")

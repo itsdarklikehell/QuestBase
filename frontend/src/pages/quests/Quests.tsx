@@ -15,6 +15,7 @@ import { CampaignMemberRole } from "@/types/api/campaignMember"
 const Quests = () => {
   const { user } = useAuth()
   const { activeCampaign } = useCampaign()
+  // TODO: fix to actual quest's campaign
   const [ owner ] = useState<boolean>(activeCampaign?.role === CampaignMemberRole.OWNER)
   const [quests, setQuests] = useState<QuestType[]>([])
   const noResultsRef = useRef<HTMLDivElement | null>(null)

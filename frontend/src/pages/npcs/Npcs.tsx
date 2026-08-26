@@ -5,14 +5,14 @@ import CampaignEmptyState from "@/components/states/CampaignEmptyState/CampaignE
 import CreateButton from "@/components/ui/CreateButton/CreateButton"
 import { useCallback, useEffect, useState } from "react"
 import NpcEditor from "./NpcEditor"
-import { CreateNpcRequest, Npc as NpcType } from "@/types/api/npc"
+import { CreateNpcRequest, NpcDetails } from "@/types/api/npc"
 import { useAuth } from "@/context/AuthContext"
 import Npc from "./Npc"
 
 export default function Npcs () {
   const { user } = useAuth()
   const { activeCampaign } = useCampaign()
-  const [ npcs, setNpcs ] = useState<NpcType[]>([])
+  const [ npcs, setNpcs ] = useState<NpcDetails[]>([])
   const [ openCreateEditor, setOpenCreateEditor ] = useState<boolean>()
   const [ submitting, setSubmitting ] = useState<boolean>(false)
 

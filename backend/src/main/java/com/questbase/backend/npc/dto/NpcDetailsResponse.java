@@ -2,6 +2,8 @@ package com.questbase.backend.npc.dto;
 
 import java.time.LocalDateTime;
 
+import com.questbase.backend.notes.npc.NpcNotes;
+import com.questbase.backend.notes.npc.dto.NpcNotesResponse;
 import com.questbase.backend.npc.Npc;
 import com.questbase.backend.npc.enums.NpcRole;
 import com.questbase.backend.npc.enums.NpcStatus;
@@ -9,7 +11,7 @@ import com.questbase.backend.npc.enums.NpcStatus;
 import lombok.Builder;
 
 @Builder
-public record NpcResponse (
+public record NpcDetailsResponse (
     Long id,
     String name,
     String description,
@@ -22,10 +24,11 @@ public record NpcResponse (
     String appearance,
     String notes,
     LocalDateTime createdAt,
-    Long campaignId
+    Long campaignId,
+    NpcNotesResponse personalNotes
 ) {
-    public static NpcResponse from(Npc npc) {
-        return new NpcResponse(
+    public static NpcDetailsResponse from(Npc npc, NpcNotes notes) {
+        return new NpcDetailsResponse(
             npc.getId(),
             npc.getName(),
             npc.getDescription(),
@@ -38,7 +41,8 @@ public record NpcResponse (
             npc.getAppearance(),
             npc.getNotes(),
             npc.getCreatedAt(),
-            npc.getCampaign().getId()
+            npc.getCampaign().getId(),
+            NpcNotesResponse.from(notes)
         );
     }
 }

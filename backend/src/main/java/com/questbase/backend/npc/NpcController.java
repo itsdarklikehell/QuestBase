@@ -1,9 +1,14 @@
 package com.questbase.backend.npc;
 
+import com.questbase.backend.notes.npc.NpcNotesService;
+import com.questbase.backend.notes.npc.dto.CreateNpcNotesRequest;
+import com.questbase.backend.notes.npc.dto.NpcNotesResponse;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.questbase.backend.npc.dto.CreateNpcRequest;
+import com.questbase.backend.npc.dto.NpcDetailsResponse;
 import com.questbase.backend.npc.dto.NpcQuestResponse;
 import com.questbase.backend.npc.dto.NpcResponse;
 import com.questbase.backend.npc.dto.SaveNpcNotesRequest;
@@ -25,14 +30,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RequestMapping("/api/npcs")
 public class NpcController {
 
+    private final NpcNotesService npcNotesService;
     private final NpcService npcService;
 
-    public NpcController(NpcService npcService) {
+    public NpcController(NpcService npcService, NpcNotesService npcNotesService) {
         this.npcService = npcService;
+        this.npcNotesService = npcNotesService;
     }
 
     @GetMapping("/{id}")
-    public NpcResponse getNpcById(
+    public NpcDetailsResponse getNpcById(
         @PathVariable Long id
     ) {
         return npcService.getNpcById(id);
@@ -50,7 +57,7 @@ public class NpcController {
     }
 
     @PutMapping("/{id}")
-    public NpcResponse putMethodName(
+    public NpcDetailsResponse putMethodName(
         @PathVariable Long id, 
         @RequestBody CreateNpcRequest request
     ) {
@@ -63,13 +70,24 @@ public class NpcController {
     }
 
     @PatchMapping("/{id}/save-notes")
-    public NpcResponse saveNpcNotesById(
+    public NpcDetailsResponse saveNpcNotesById(
         @PathVariable Long id,
         @RequestBody SaveNpcNotesRequest request
     ) {
         return npcService.saveNpcNotesById(
             id,
             request.notes()
+        );
+    }
+
+    @PatchMapping("/{npcId}/save-personal-notes")
+    public NpcNotesResponse savePersonalNotesByNpcId(
+        @PathVariable Long npcId,
+        @RequestBody CreateNpcNotesRequest request
+    ) {
+        return npcNotesService.saveNpcNotes(
+            npcId,
+            request
         );
     }
 

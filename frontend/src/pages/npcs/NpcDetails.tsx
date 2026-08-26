@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import styles from "./Npcs.module.css"
 import layoutStyles from "@/layouts/AuthLayout/AuthLayout.module.css"
-import { BookPlus, Briefcase, ChartNoAxesColumnIncreasing, IdCard } from "lucide-react"
+import { BookPlus, Briefcase, ChartNoAxesColumnIncreasing, Edit, Globe, IdCard, Lock } from "lucide-react"
 import TextEditor from "@/components/ui/TextEditor/TextEditor"
 import NpcEditor from "./NpcEditor"
 import DetailPage from "@/components/ui/DetailPage/DetailPage"
@@ -20,17 +20,30 @@ import { useCampaign } from "@/context/campaign/useCampaign"
 import { CampaignMemberRole } from "@/types/api/campaignMember"
 
 export default function NpcsDetails () {
-  const { activeCampaign } = useCampaign()
+  const { campaigns } = useCampaign()
   const { npcId } = useParams()
   const navigate = useNavigate()
-  const [ owner ] = useState<boolean>(activeCampaign?.role === CampaignMemberRole.OWNER)
+  const [ owner, setOwner ] = useState<boolean>(false)
+
   const [ npc, setNpc ] = useState<Npc | null>(null)
   const [ notes, setNotes ] = useState<string>("")
+  const [ personalNotes, setPersonalNotes ] = useState<string>("")
   const [ npcQuests, setNpcQuests ] = useState<NpcQuestType[]>([])
+  
   const [ loading, setLoading ] = useState<boolean>(true)
   const [ submitting, setSubmitting ] = useState<boolean>(false)
   const [ editting, setEditting ] = useState<boolean>(false)
+
   const [ showNpcQuestEditor, setShowNpcQuestEditor ] = useState<boolean>(false)
+  const [ showGeneralEditor, setShowGeneralEditor ] = useState<boolean>(false)
+  const [ showPersonalEditor, setShowPersonalEditor ] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (campaigns.length > 0 && npc?.campaignId) {
+      const campaign = campaigns.find((campaign) => campaign.id === npc.campaignId)
+      if (campaign) setOwner(campaign.role === CampaignMemberRole.OWNER)
+    }
+  },[campaigns, npc?.campaignId])
 
   const toggleEdit = () => {
     setEditting(!editting)
@@ -40,7 +53,6 @@ export default function NpcsDetails () {
     if (!npcId) return
     try {
       const quests = await fetchQuestsForNpc(Number(npcId))
-      console.log("quests: ", quests)
       if (quests) setNpcQuests(quests)
     } catch (error) {
       console.error("Failed to fetch NPC's quests: ", error)
@@ -57,6 +69,7 @@ export default function NpcsDetails () {
         const npc = await response.json()
         setNpc(npc)
         setNotes(npc?.notes)
+        if (npc?.personalNotes) setPersonalNotes(npc.personalNotes.notes)
         fetchQuests()
       } else {
         console.error(response)
@@ -134,6 +147,33 @@ export default function NpcsDetails () {
       return () => clearTimeout(timeout)
     }
   }, [notes, saveNotes, owner])
+
+  const savePersonalNotes = useCallback(async (notes: string) => {
+    try {
+      const response = await fetch(`/api/npcs/${npcId}/save-personal-notes`, { 
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notes })
+      })
+      if (response.ok) {
+        const notes = await response.json()
+        setPersonalNotes(notes.notes)
+      } else {
+        console.error(response)
+      }
+    } catch (error) {
+      console.error("Failed to save personal NPC notes: ", error)
+    }
+  }, [npcId])
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!personalNotes) return
+      savePersonalNotes(personalNotes)
+    }, 1500)
+
+    return () => clearTimeout(timeout)
+  }, [personalNotes, savePersonalNotes, owner])
 
   // ===========================================================================
   // Add Dropdown Functionality 
@@ -217,35 +257,86 @@ export default function NpcsDetails () {
                     </div>
                   </>
                 )}
-                {npcQuests.length > 0 && 
-                  <div>
-                    <p className={DetailPageStyles.text_label}>Quests:</p>
-                      <div className={DetailPageStyles.information_2}>
-                        {npcQuests.map((npcQuest) => (
-                          <NpcQuest 
-                            npcQuest={npcQuest}
-                            fetchQuests={fetchQuests}
-                          />
-                        ))}
-                      </div>
-                  </div>
-                }
+
+                <hr className={DetailPageStyles.section_hr}/>
+
                 {(notes || owner) && <div>
-                  <p className={DetailPageStyles.text_label}>General Notes:</p>
-                  {owner ? (
+                  <div className={DetailPageStyles.section_header}>
+                    <p>General Notes:</p>
+                    <div className={`${layoutStyles.card_flex} ${styles.public}`}>
+                          <Globe/>
+                          Public
+                        </div>
+                    {owner && 
+                      <>
+                        <Edit
+                          className={`${DetailPageStyles.blue_icon} ${showGeneralEditor ? DetailPageStyles.active : ""}`}
+                          onClick={() => setShowGeneralEditor(!showGeneralEditor)}/>
+                      </>
+                    }
+                  </div>
+                  {showGeneralEditor && owner ? (
                     <TextEditor
                       value={notes}
                       onChange={setNotes}
                     />
                   ) : (
-                    <div 
-                      className={layoutStyles.editor_notes}
-                      dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(notes)
-                      }}
-                    />
+                    notes 
+                      ? <div 
+                          className={layoutStyles.editor_notes}
+                          dangerouslySetInnerHTML={{
+                            __html: DOMPurify.sanitize(notes)
+                          }}
+                        />
+                      : <p style={{ color: "grey" }}>No general notes yet...</p>
                   )}
                 </div>}
+
+                <div>
+                  <div className={DetailPageStyles.section_header}>
+                    <p>Personal Notes:</p>
+                    <div className={`${layoutStyles.card_flex} ${styles.private}`}>
+                      <Lock/>
+                      Private
+                    </div>
+                    <Edit
+                      className={`${DetailPageStyles.blue_icon} ${showPersonalEditor ? DetailPageStyles.active : ""}`}
+                      onClick={() => setShowPersonalEditor(!showPersonalEditor)}/>
+                  </div>
+                  {showPersonalEditor ? (
+                    <TextEditor
+                      value={personalNotes}
+                      onChange={setPersonalNotes}
+                    />
+                  ) : (
+                    personalNotes 
+                      ? <div 
+                          className={layoutStyles.editor_notes}
+                          dangerouslySetInnerHTML={{
+                            __html: DOMPurify.sanitize(personalNotes)
+                          }}
+                        />
+                      : <p style={{ color: "grey" }}>No personal notes yet...</p>
+                  )}
+                </div>
+
+                <hr className={DetailPageStyles.section_hr}/>
+                                
+                {npcQuests.length > 0 && 
+                  <div>
+                    <p className={DetailPageStyles.text_label}>Quests:</p>
+                      <div className={DetailPageStyles.information_2}>
+                        {npcQuests.map((npcQuest) => (
+                          <NpcQuest
+                            key={npcQuest.id}
+                            npcQuest={npcQuest}
+                            fetchQuests={fetchQuests}
+                            editable={owner}
+                          />
+                        ))}
+                      </div>
+                  </div>
+                }
               </div>
             }
           />
