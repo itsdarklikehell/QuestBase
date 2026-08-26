@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom"
 import { HashLink } from "react-router-hash-link";
-import SmallSparkle from "@/assets/svgs/small-sparkle.svg?react"
+import QBLogo from "@/assets/qb-logo.png"
 import styles from "./Navigation.module.css"
 import { useAuth } from "@/context/AuthContext"
 import { useState } from "react"
@@ -20,7 +20,7 @@ export default function Navigation () {
   return (
     <header>
       <Link className={styles.title} to={"/"}>
-        <SmallSparkle className={styles.small_sparkle}/>
+        <img className={styles.logo} src={QBLogo} alt="QuestBase" />
         <h1>Quest<span>Base</span></h1>
       </Link>
       {/* Desktop Links */}

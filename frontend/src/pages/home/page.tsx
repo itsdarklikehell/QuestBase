@@ -1,10 +1,9 @@
 import styles from "./page.module.css"
 import FrogWizardImage from "@/assets/imgs/QB_Froggo_Wizard.png"
-import Sparkle from "@/assets/svgs/sparkle.svg?react"
 import SmallSparkle from "@/assets/svgs/small-sparkle.svg?react"
 import MediumSparkle from "@/assets/svgs/medium-sparkle.svg?react"
 import LargeSparkle from "@/assets/svgs/large-sparkle.svg?react"
-import { Book, BookUser, CircleAlert, CircleX, FolderGit2, Map, PartyPopper, Send, UsersRound } from "lucide-react"
+import { Book, BookUser, CircleAlert, CircleX, FolderGit2, Map, PartyPopper, Send, Sparkle, UsersRound } from "lucide-react"
 import React, { useEffect, useState } from "react"
 import { HashLink } from "react-router-hash-link";
 import Loader from "@/components/ui/Loader/Loader"

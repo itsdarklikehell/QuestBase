@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react"
 import styles from "./QuestEditor.module.css"
 import layoutStyles from "@/layouts/AuthLayout/AuthLayout.module.css"
 import Dropdown from "@/components/Dropdown/Dropdown"
-import CloseIcon from "@/assets/x.svg?react"
 import { CreateQuestRequest, Quest } from "@/types/api/quest"
+import { X } from "lucide-react"
 
 interface QuestEditorProps {
   style?: React.CSSProperties
@@ -97,7 +97,7 @@ const QuestEditor = ({
               : <>Editing: <span>{title}</span></>
             }
           </h2>
-          <CloseIcon
+          <X
             className={layoutStyles.green_close_icon} 
             onClick={() => setEditorVisible(false)}
           />

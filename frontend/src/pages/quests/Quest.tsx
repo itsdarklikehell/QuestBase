@@ -1,10 +1,9 @@
 import styles from "./Quests.module.css"
 import layoutStyles from "@/layouts/AuthLayout/AuthLayout.module.css"
-import EditIcon from "@/assets/edit.svg?react"
-import TrashIcon from "@/assets/trash.svg?react"
 import { useNavigate } from "react-router-dom"
 import { Quest as QuestType } from "@/types/api/quest"
 import { useState } from "react"
+import { Edit, Trash2 } from "lucide-react"
 
 interface QuestProp {
   quest: QuestType
@@ -76,14 +75,14 @@ export default function Quest ({
               }}>No</button>
             </div>
           : <>
-              <EditIcon
+              <Edit
                 className={layoutStyles.edit_icon}
                 onClick={(e) => {
                   e.stopPropagation()
                   setEditing?.({ quest, index })
                 }} 
               />
-              <TrashIcon 
+              <Trash2 
                 className={layoutStyles.trash_icon}
                 onClick={(e) => {
                   e.stopPropagation()

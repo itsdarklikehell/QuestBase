@@ -29,18 +29,21 @@ header {
   color: white;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 3px;
   cursor: pointer;
 }
 
-.small_sparkle {
-  width: 20px;
-  height: 20px;
-  fill: #94a7fa;
+.logo {
+  height: 30px;
+}
+
+.title:hover {
+  color: white;
 }
 
 a.title h1,
 a.title span {
+  color: #e1e7f5;
   font-size: 1.7rem;
   line-height: 1.7rem;
   font-weight: 500;
@@ -50,15 +53,8 @@ a.title span {
     transform ease-in-out 0.2s;
 }
 
-a.title h1 span {
-  color: rgb(148 167 250);
-}
-a.title h1:hover {
-  color: rgb(255, 255, 255);
-  transform: scale(1.02);
-}
-a.title h1:hover span {
-  color: #adff5d;
+a.title span {
+  color: var(--qb-periwinkle);
 }
 
 .navigation {

@@ -2,15 +2,13 @@ import layoutStyles from "@/layouts/AuthLayout/AuthLayout.module.css"
 import styles from "./Campaigns.module.css"
 import { Campaign } from "@/types/api/campaign";
 import { useRef, useState } from "react"
-import CloseIcon from "../../assets/x.svg?react"
-import EditIcon from "../../assets/edit.svg?react"
-import TrashIcon from "../../assets/trash.svg?react"
 import { useCampaign } from "@/context/campaign/useCampaign";
 import CampaignBanner from "@/assets/imgs/Campaign_Banner.png"
 import PageHeader from "@/components/ui/PageHeader/PageHeader";
 import CreateButton from "@/components/ui/CreateButton/CreateButton";
 import { CampaignMemberRole } from "@/types/api/campaignMember";
 import { useNavigate } from "react-router-dom";
+import { Edit, Trash2, X } from "lucide-react";
 
 // TODO: add a loading sequence between fetchCampaigns
 
@@ -163,11 +161,11 @@ const Campaigns = () => {
                       </div>
                       {campaign.role === CampaignMemberRole.OWNER && 
                         <div className={styles.campaign_actions}>
-                          <EditIcon
+                          <Edit
                             className={styles.campaign_edit}
                             onClick={() => openEditor(campaign)} 
                           />
-                          <TrashIcon 
+                          <Trash2 
                             className={styles.campaign_trash}
                             onClick={() => openDeletionPopup(campaign)}
                           />
@@ -202,7 +200,7 @@ const Campaigns = () => {
                 : <>Editing: <span>{name}</span></>
               }
             </h2>
-            <CloseIcon
+            <X
               className={layoutStyles.green_close_icon} 
               onClick={closeEditor}
             />
@@ -244,7 +242,7 @@ const Campaigns = () => {
         <div className={`${layoutStyles.editor} ${styles.editor_content}`}>
           <div className={layoutStyles.editor_title}>
             <h2><span>Delete</span> Campaign</h2>
-            <CloseIcon
+            <X
                 className={layoutStyles.green_close_icon} 
                 onClick={closeDeletionPopup}
               />
