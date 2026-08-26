@@ -109,11 +109,7 @@ const DashboardNavigation = () => {
           <p className={styles.navigation_header}>RESOURCES</p>
           {pages
             .filter((p) => 
-              activeCampaign?.role === CampaignMemberRole.OWNER ||
-              (
-                activeCampaign?.role === CampaignMemberRole.PLAYER &&
-                p.access === "ALL"
-              )
+              activeCampaign?.role === CampaignMemberRole.OWNER || p.access === "ALL"
             )
             .map((p) => (
             <div
@@ -130,6 +126,7 @@ const DashboardNavigation = () => {
           style={{ marginTop: "20px"}}
           className={styles.navigation_header}
         >MORE COMING SOON...</p>
+        
       </div>
 
       <div>
