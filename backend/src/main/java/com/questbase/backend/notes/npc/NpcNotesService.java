@@ -64,7 +64,7 @@ public class NpcNotesService {
         User currentUser = authService.getCurrentUser();
 
         Optional<NpcNotes> existingNotes = npcNotesRepository.findByNpcIdAndUserId(
-            npcId, 
+            npcId,
             currentUser.getId()
         );
 

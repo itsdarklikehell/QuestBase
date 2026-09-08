@@ -1,5 +1,5 @@
 package com.questbase.backend.quest.dto;
 
-public record SaveQuestNotesById (
+public record SaveQuestNotesRequest (
     String notes
 ) {}

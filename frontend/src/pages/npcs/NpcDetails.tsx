@@ -1,11 +1,9 @@
-import DOMPurify from "dompurify";
 import { CreateNpcRequest, Npc } from "@/types/api/npc"
 import { useCallback, useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import styles from "./Npcs.module.css"
 import layoutStyles from "@/layouts/AuthLayout/AuthLayout.module.css"
-import { BookPlus, Briefcase, ChartNoAxesColumnIncreasing, Edit, Globe, IdCard, Lock } from "lucide-react"
-import TextEditor from "@/components/ui/TextEditor/TextEditor"
+import { BookPlus, Briefcase, ChartNoAxesColumnIncreasing, IdCard } from "lucide-react"
 import NpcEditor from "./NpcEditor"
 import DetailPage from "@/components/ui/DetailPage/DetailPage"
 import DetailPageStyles from "@/components/ui/DetailPage/DetailPage.module.css"
@@ -18,6 +16,7 @@ import { type NpcQuest as NpcQuestType } from "@/types/api/questnpc"
 import NpcQuest from "./NpcQuest"
 import { useCampaign } from "@/context/campaign/useCampaign"
 import { CampaignMemberRole } from "@/types/api/campaignMember"
+import DetailPageEditors from "@/components/ui/DetailPageEditors/DetailPageEditors"
 
 export default function NpcsDetails () {
   const { campaigns } = useCampaign()
@@ -260,65 +259,21 @@ export default function NpcsDetails () {
 
                 <hr className={DetailPageStyles.section_hr}/>
 
-                {(notes || owner) && <div>
-                  <div className={DetailPageStyles.section_header}>
-                    <p>General Notes:</p>
-                    <div className={`${layoutStyles.card_flex} ${styles.public}`}>
-                          <Globe/>
-                          Public
-                        </div>
-                    {owner && 
-                      <>
-                        <Edit
-                          className={`${DetailPageStyles.blue_icon} ${showGeneralEditor ? DetailPageStyles.active : ""}`}
-                          onClick={() => setShowGeneralEditor(!showGeneralEditor)}/>
-                      </>
-                    }
-                  </div>
-                  {showGeneralEditor && owner ? (
-                    <TextEditor
-                      value={notes}
-                      onChange={setNotes}
-                    />
-                  ) : (
-                    notes 
-                      ? <div 
-                          className={layoutStyles.editor_notes}
-                          dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(notes)
-                          }}
-                        />
-                      : <p style={{ color: "grey" }}>No general notes yet...</p>
-                  )}
-                </div>}
-
-                <div>
-                  <div className={DetailPageStyles.section_header}>
-                    <p>Personal Notes:</p>
-                    <div className={`${layoutStyles.card_flex} ${styles.private}`}>
-                      <Lock/>
-                      Private
-                    </div>
-                    <Edit
-                      className={`${DetailPageStyles.blue_icon} ${showPersonalEditor ? DetailPageStyles.active : ""}`}
-                      onClick={() => setShowPersonalEditor(!showPersonalEditor)}/>
-                  </div>
-                  {showPersonalEditor ? (
-                    <TextEditor
-                      value={personalNotes}
-                      onChange={setPersonalNotes}
-                    />
-                  ) : (
-                    personalNotes 
-                      ? <div 
-                          className={layoutStyles.editor_notes}
-                          dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(personalNotes)
-                          }}
-                        />
-                      : <p style={{ color: "grey" }}>No personal notes yet...</p>
-                  )}
-                </div>
+                <DetailPageEditors
+                  owner={owner}
+                  general={{
+                    notes,
+                    setNotes,
+                    show: showGeneralEditor,
+                    setShow: setShowGeneralEditor,
+                  }}
+                  personal={{
+                    notes: personalNotes,
+                    setNotes: setPersonalNotes,
+                    show: showPersonalEditor,
+                    setShow: setShowPersonalEditor,
+                  }}
+                />
 
                 <hr className={DetailPageStyles.section_hr}/>
                                 

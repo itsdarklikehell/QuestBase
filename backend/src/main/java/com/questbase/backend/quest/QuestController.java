@@ -1,5 +1,9 @@
 package com.questbase.backend.quest;
 
+import com.questbase.backend.notes.quest.QuestNotesService;
+import com.questbase.backend.notes.quest.dto.CreateQuestNotesRequest;
+import com.questbase.backend.notes.quest.dto.QuestNotesResponse;
+
 import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,10 +15,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.questbase.backend.notes.npc.dto.CreateNpcNotesRequest;
+import com.questbase.backend.notes.npc.dto.NpcNotesResponse;
 import com.questbase.backend.quest.dto.CreateQuestRequest;
+import com.questbase.backend.quest.dto.QuestDetailsResponse;
 import com.questbase.backend.quest.dto.QuestNpcResponse;
 import com.questbase.backend.quest.dto.QuestResponse;
-import com.questbase.backend.quest.dto.SaveQuestNotesById;
+import com.questbase.backend.quest.dto.SaveQuestNotesRequest;
 
 import jakarta.validation.Valid;
 
@@ -25,14 +32,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RestController
 @RequestMapping("/api/quests")
 public class QuestController {
+    private final QuestNotesService questNotesService;
     private final QuestService questService;
 
-    public QuestController(QuestService questService) {
+    public QuestController(QuestService questService, QuestNotesService questNotesService) {
         this.questService = questService;
+        this.questNotesService = questNotesService;
     }
 
     @GetMapping("/{id}")
-    public QuestResponse getQuestById(@PathVariable Long id) {
+    public QuestDetailsResponse getQuestById(@PathVariable Long id) {
         return questService.getQuestById(id);
     }
     
@@ -72,11 +81,22 @@ public class QuestController {
     @PatchMapping("/{id}/save-notes")
     public QuestResponse saveQuestNotesById(
         @PathVariable Long id,
-        @RequestBody SaveQuestNotesById request
+        @RequestBody SaveQuestNotesRequest request
     ) {
         return questService.saveQuestNotesById(
             id,
             request.notes()
+        );
+    }
+
+    @PatchMapping("/{questId}/save-personal-notes")
+    public QuestNotesResponse savePersonalNotesByNpcId(
+        @PathVariable Long questId,
+        @RequestBody CreateQuestNotesRequest request
+    ) {
+        return questNotesService.saveQuestNotes(
+            questId,
+            request
         );
     }
 

@@ -6,7 +6,11 @@ import com.questbase.backend.campaign.Campaign;
 import com.questbase.backend.campaign.CampaignAccessService;
 import com.questbase.backend.campaign.CampaignRepository;
 import com.questbase.backend.exception.ResourceNotFoundException;
+import com.questbase.backend.notes.npc.NpcNotes;
+import com.questbase.backend.notes.quest.QuestNotes;
+import com.questbase.backend.notes.quest.QuestNotesRepository;
 import com.questbase.backend.quest.dto.CreateQuestRequest;
+import com.questbase.backend.quest.dto.QuestDetailsResponse;
 import com.questbase.backend.quest.dto.QuestNpcResponse;
 import com.questbase.backend.quest.dto.QuestResponse;
 import com.questbase.backend.relationship.questnpc.QuestNpc;
@@ -23,6 +27,7 @@ public class QuestService {
     private final CampaignAccessService campaignAccessService;
     private final CampaignRepository campaignRepository;
     private final QuestRepository questRepository;
+    private final QuestNotesRepository questNotesRepository;
     private final QuestNpcRepository questNpcRepository;
 
     public QuestService(
@@ -30,16 +35,18 @@ public class QuestService {
         CampaignAccessService campaignAccessService,
         CampaignRepository campaignRepository,
         QuestRepository questRepository,
+        QuestNotesRepository questNotesRepository,
         QuestNpcRepository questNpcRepository
     ) {
         this.authService = authService;
         this.campaignAccessService = campaignAccessService;
         this.campaignRepository = campaignRepository;
         this.questRepository = questRepository;
+        this.questNotesRepository = questNotesRepository;
         this.questNpcRepository = questNpcRepository;
     }
 
-    public QuestResponse getQuestById(Long id) {
+    public QuestDetailsResponse getQuestById(Long id) {
         User currentUser = authService.getCurrentUser();
 
         Quest quest = questRepository.findById(id)
@@ -50,7 +57,12 @@ public class QuestService {
             currentUser.getId()
         );
 
-        return toResponse(quest);
+        QuestNotes notes = questNotesRepository.findByQuestIdAndUserId(
+            quest.getId(), 
+            currentUser.getId()
+        ).orElse(null);
+
+        return QuestDetailsResponse.from(quest, notes);
     }
 
     public List<QuestResponse> getAllQuests() {
@@ -59,7 +71,7 @@ public class QuestService {
         List<Quest> quests = questRepository.findByCampaignUser(currentUser);
 
         return quests.stream()
-            .map(quest -> toResponse(quest))
+            .map(quest -> QuestResponse.from(quest))
             .toList();
     }
 
@@ -79,7 +91,7 @@ public class QuestService {
             .build();
 
         Quest savedQuest = questRepository.save(quest);
-        return toResponse(savedQuest);
+        return QuestResponse.from(savedQuest);
     }
 
     public QuestResponse updateQuest(
@@ -102,7 +114,7 @@ public class QuestService {
         quest.setCampaign(campaign);
 
         Quest savedQuest = questRepository.save(quest);
-        return toResponse(savedQuest);
+        return QuestResponse.from(savedQuest);
     }
 
     public QuestResponse patchQuest(
@@ -141,7 +153,7 @@ public class QuestService {
         }
 
         Quest savedQuest = questRepository.save(quest);
-        return toResponse(savedQuest);
+        return QuestResponse.from(savedQuest);
     }
 
     public void deleteQuest(Long id) {
@@ -174,7 +186,7 @@ public class QuestService {
         }
 
         return quests.stream()
-            .map(quest -> toResponse(quest))
+            .map(quest -> QuestResponse.from(quest))
             .toList();
     }
 
@@ -192,7 +204,7 @@ public class QuestService {
 
         Quest savedQuest = questRepository.save(quest);
 
-        return toResponse(savedQuest);
+        return QuestResponse.from(savedQuest);
     }
 
     // =========================================================================
@@ -217,22 +229,5 @@ public class QuestService {
         return questNpcs.stream()
             .map(QuestNpcResponse::from)
             .toList();
-    }
-
-    // =========================================================================
-    // HELPER FUNCTIONS
-    // =========================================================================
-
-    private QuestResponse toResponse(Quest quest) {
-        return QuestResponse.builder()
-            .id(quest.getId())
-            .title(quest.getTitle())
-            .description(quest.getDescription())
-            .status(quest.getStatus())
-            .difficulty(quest.getDifficulty())
-            .rewardXp(quest.getRewardXp())
-            .createdAt(quest.getCreatedAt())
-            .notes(quest.getNotes())
-            .build();
     }
 }

@@ -1,12 +1,10 @@
-import DOMPurify from "dompurify";
-import { CreateQuestRequest, Quest } from "@/types/api/quest"
+import { CreateQuestRequest, Quest, QuestDetails as QuestDetailsType } from "@/types/api/quest"
 import { useCallback, useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import styles from "./Quests.module.css"
 import layoutStyles from "@/layouts/AuthLayout/AuthLayout.module.css"
 import DetailPage from "@/components/ui/DetailPage/DetailPage"
 import DetailPageStyles from "@/components/ui/DetailPage/DetailPage.module.css"
-import TextEditor from "@/components/ui/TextEditor/TextEditor"
 import QuestEditor from "./QuestEditor/QuestEditor"
 import { useCampaign } from "@/context/campaign/useCampaign"
 import Loader from "@/components/ui/Loader/Loader"
@@ -18,19 +16,31 @@ import { DetailDropdownOption } from "@/components/ui/DetailPage/DetailDropdown"
 import { UserPlus } from "lucide-react"
 import QuestNpcEditor, { QuestNpcEditorAction } from "../npcs/QuestNpcEditor"
 import { CampaignMemberRole } from "@/types/api/campaignMember"
+import DetailPageEditors from "@/components/ui/DetailPageEditors/DetailPageEditors";
 
 export default function QuestDetails () {
   const { questId } = useParams()
   const navigate = useNavigate()
-  const { activeCampaign } = useCampaign()
-  // TODO: fix to actual quest's campaign
-  const [ owner ] = useState<boolean>(activeCampaign?.role === CampaignMemberRole.OWNER)
+  const { activeCampaign, campaigns } = useCampaign()
+  const [ owner, setOwner ] = useState<boolean>(false)
+
   const [ quest, setQuest ] = useState<Quest | null>(null)
   const [ notes, setNotes ] = useState<string>("")
+  const [ personalNotes, setPersonalNotes ] = useState<string>("")
   const [ questNpcs, setQuestNpcs ] = useState<QuestNpcType[]>([])
+
   const [ loading, setLoading ] = useState<boolean>(true)
   const [ editting, setEditting ] = useState<boolean>(false)
   const [ showNpcQuestEditor, setShowNpcQuestEditor ] = useState<boolean>(false)
+  const [ showGeneralEditor, setShowGeneralEditor ] = useState<boolean>(false)
+  const [ showPersonalEditor, setShowPersonalEditor ] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (campaigns.length > 0 && quest?.campaignId) {
+      const campaign = campaigns.find((campaign) => campaign.id === quest.campaignId)
+      if (campaign) setOwner(campaign.role === CampaignMemberRole.OWNER)
+    }
+  },[campaigns, quest?.campaignId])
 
   const fetchNpcs = useCallback(async () => {
     try {
@@ -48,9 +58,11 @@ export default function QuestDetails () {
         { method: "GET" }
       )
       if (response.ok) {
-        const quest = await response.json()
+        const quest: QuestDetailsType = await response.json()
         setQuest(quest)
         setNotes(quest?.notes)
+        if (quest?.personalNotes) 
+          setPersonalNotes(quest.personalNotes.notes)
         fetchNpcs()
       } else {
         console.error(response)
@@ -94,6 +106,33 @@ export default function QuestDetails () {
       return () => clearTimeout(timeout)
     }
   }, [notes, saveNotes, owner])
+
+  const savePersonalNotes = useCallback(async (notes: string) => {
+    try {
+      const response = await fetch(`/api/quests/${questId}/save-personal-notes`, { 
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notes })
+      })
+      if (response.ok) {
+        const notes = await response.json()
+        setPersonalNotes(notes.notes)
+      } else {
+        console.error(response)
+      }
+    } catch (error) {
+      console.error("Failed to save personal quest notes: ", error)
+    }
+  }, [questId])
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!personalNotes) return
+      savePersonalNotes(personalNotes)
+    }, 1500)
+
+    return () => clearTimeout(timeout)
+  }, [personalNotes, savePersonalNotes, owner])
 
   const updateQuest = async (
     id: number, 
@@ -184,6 +223,27 @@ export default function QuestDetails () {
                       <p>{quest.description}</p>
                     </div>
                   }
+
+                  <hr className={DetailPageStyles.section_hr}/>
+
+                  <DetailPageEditors
+                    owner={owner}
+                    general={{
+                      notes,
+                      setNotes,
+                      show: showGeneralEditor,
+                      setShow: setShowGeneralEditor,
+                    }}
+                    personal={{
+                      notes: personalNotes,
+                      setNotes: setPersonalNotes,
+                      show: showPersonalEditor,
+                      setShow: setShowPersonalEditor,
+                    }}
+                  />
+
+                  <hr className={DetailPageStyles.section_hr}/>
+
                   {questNpcs.length > 0 && 
                     <div>
                       <p className={DetailPageStyles.text_label}>NPCs:</p>
@@ -199,24 +259,7 @@ export default function QuestDetails () {
                         </div>
                     </div>
                   }
-                  {(notes || owner) && 
-                    <div>
-                      <p className={DetailPageStyles.text_label}>General Notes:</p>
-                      {owner ? (
-                        <TextEditor
-                          value={notes}
-                          onChange={setNotes}
-                        />
-                      ) : (
-                        <div 
-                          className={layoutStyles.editor_notes}
-                          dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(notes)
-                          }}
-                        />
-                      )}
-                    </div>
-                  }
+
                 </>
               )}
             </div>

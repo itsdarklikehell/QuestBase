@@ -1,5 +1,3 @@
-import { Campaign } from "./campaign";
-
 export interface Quest {
   id: number,
   title: string,
@@ -8,7 +6,20 @@ export interface Quest {
   difficulty: string,
   rewardXp: string,
   createdAt: string,
-  campaign: Campaign
+  campaignId: number
+}
+
+export interface QuestDetails {
+  id: number,
+  title: string,
+  description: string,
+  status: string,
+  difficulty: string,
+  rewardXp: string,
+  createdAt: string,
+  campaignId: number,
+  notes: string,
+  personalNotes: QuestNotes
 }
 
 export interface CreateQuestRequest {
@@ -18,4 +29,13 @@ export interface CreateQuestRequest {
   difficulty: string,
   rewardXp: number,
   campaignId: number
+}
+
+export interface QuestNotes {
+  id: number,
+  quest_id: number,
+  user_id: number,
+  notes: string,
+  createdAt: string,
+  updatedAt: string
 }
