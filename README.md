@@ -16,10 +16,10 @@ As the project evolves, QuestBase aims to become a hub for creating and sharing 
 - **Quest & NPC Relationships** — Associate NPCs with quests and view those relationships from either side, making it easier to keep track of who is involved in each storyline.
 - **Player Invitations** — Invite players to campaigns through secure invitation links, allowing them to join and view shared campaign content.
 - **Role-Based Campaign Access** — Campaign owners retain management controls while invited players receive access to view campaign content.
+- **Global & Private Notes** — DMs can create general notes for all players to view. All users can create personal notes on quests and npcs they have access to. 
 
 ### Planned
 
-- DM-only private notes
 - Add locations + relationship between quests and NPCs
 - Session recap tools
 - Party inventory and rewards
