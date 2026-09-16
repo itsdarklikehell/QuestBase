@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.questbase.backend.campaign.dto.CampaignResponse;
 import com.questbase.backend.campaign.dto.CreateCampaignRequest;
+import com.questbase.backend.location.LocationService;
+import com.questbase.backend.location.dto.LocationResponse;
 import com.questbase.backend.npc.NpcService;
 import com.questbase.backend.npc.dto.NpcResponse;
 import com.questbase.backend.quest.QuestService;
@@ -37,6 +39,7 @@ public class CampaignController {
     private final CampaignService campaignService;
     private final CampaignInviteService campaignInviteService;
     private final CampaignMemberService campaignMemberService;
+    private final LocationService locationService;
     private final NpcService npcService;
     private final QuestService questService;
 
@@ -44,12 +47,14 @@ public class CampaignController {
         CampaignService campaignService,
         CampaignInviteService campaignInviteService,
         CampaignMemberService campaignMemberService,
+        LocationService locationService,
         NpcService npcService,
         QuestService questService
     ) {
         this.campaignService = campaignService;
         this.campaignInviteService = campaignInviteService;
         this.campaignMemberService = campaignMemberService;
+        this.locationService = locationService;
         this.npcService = npcService;
         this.questService = questService;
     }
@@ -95,6 +100,18 @@ public class CampaignController {
     // =========================================================================
     // Relationships
     // =========================================================================
+
+    @GetMapping("/{campaignId}/locations")
+    public ResponseEntity<List<LocationResponse>> getCampaignLocations(
+        @PathVariable Long campaignId
+    ) {
+        List<LocationResponse> locations =
+            locationService.getLocationsByCampaignId(
+                campaignId
+            );
+
+        return ResponseEntity.ok(locations);
+    }
 
     @GetMapping("/{campaignId}/npcs")
     public ResponseEntity<List<NpcResponse>> getCampaignNpcs(

@@ -51,7 +51,7 @@
 .npc_role.QUEST_GIVER {
   background-color: var(--qb-alien-green-trans);
   border-color: var(--qb-alien-green);
-  color: var(--qb-alien-green);;
+  color: var(--qb-alien-green);
 }
 
 .npc_role.NEUTRAL,
@@ -64,7 +64,7 @@
 .npc_role.ENEMY {
   background-color: var(--qb-error-red-trans);
   border-color: var(--qb-error-red);
-  color: var(--qb-error-red)
+  color: var(--qb-error-red);
 }
 
 .npc_status.MISSING {

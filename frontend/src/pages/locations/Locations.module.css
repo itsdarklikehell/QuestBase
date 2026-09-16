@@ -1,0 +1,30 @@
+.location_type {
+  background-color: var(--qb-blue-slime-trans);
+  border-color: var(--qb-blue-slime);
+  color: var(--qb-blue-slime);
+}
+.location_status.ACTIVE {
+  background-color: var(--qb-alien-green-trans);
+  border-color: var(--qb-alien-green);
+  color: var(--qb-alien-green);
+}
+.location_status.DESTROYED {
+  background-color: var(--qb-error-red-trans);
+  border-color: var(--qb-error-red);
+  color: var(--qb-error-red);
+}
+.location_status.ABANDONED {
+  background-color: var(--qb-mana-star-trans);
+  border-color: var(--qb-mana-star);
+  color: var(--qb-mana-star);
+}
+.location_status.HIDDEN {
+  background-color: var(--qb-mimic-coin-trans);
+  border-color: var(--qb-mimic-coin);
+  color: var(--qb-mimic-coin);
+}
+.location_status.UNKNOWN {
+  background-color: var(--qb-pixie-dust-trans);
+  border-color: var(--qb-pixie-dust);
+  color: var(--qb-pixie-dust);
+}

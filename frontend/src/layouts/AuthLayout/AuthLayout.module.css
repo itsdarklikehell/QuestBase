@@ -76,6 +76,13 @@
   width: fit-content;
 }
 
+.card_property {
+  padding: 0.3rem 0.5rem;
+  border-radius: 25px;
+  border-width: 2px;
+  border-style: solid;
+}
+
 .card_flex {
   display: flex;
   align-items: center;

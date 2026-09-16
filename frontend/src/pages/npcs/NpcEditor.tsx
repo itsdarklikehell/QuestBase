@@ -82,7 +82,7 @@ export default function NpcEditor ({
       occupation,
       personality,
       appearance,
-      notes: "", // TODO: configure later
+      notes: "",
       campaignId: activeCampaign.id
     }
     onTrigger(createRequest)
