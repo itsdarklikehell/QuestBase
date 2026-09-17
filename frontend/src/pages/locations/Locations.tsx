@@ -44,7 +44,6 @@ export default function Locations () {
     try {
       setSubmitting(true)
       validate(location)
-      console.log('location: ', location)
       const response = await fetch('/api/locations', { 
         method: "POST",
         headers: { "Content-Type": "application/json" },

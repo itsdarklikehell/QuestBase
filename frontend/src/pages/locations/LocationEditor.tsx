@@ -90,11 +90,12 @@ export default function LocationEditor({
           <div className={editorStyles.editor_property}>
             <p>Name:</p>
             <input 
-              type="text" 
-              name="name" 
+              type="text"
+              name="location-name" 
               placeholder="Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              autoComplete="false"
             />
           </div>
 

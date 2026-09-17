@@ -11,6 +11,7 @@ import com.questbase.backend.campaign.CampaignAccessService;
 import com.questbase.backend.campaign.CampaignRepository;
 import com.questbase.backend.exception.ResourceNotFoundException;
 import com.questbase.backend.location.dto.CreateLocationRequest;
+import com.questbase.backend.location.dto.LocationDetailsResponse;
 import com.questbase.backend.location.dto.LocationResponse;
 
 @Service 
@@ -33,7 +34,7 @@ public class LocationService {
         this.locationRepository = locationRepository;
     }
 
-    public LocationResponse getLocationById(Long id) {
+    public LocationDetailsResponse getLocationById(Long id) {
         User currentUser = authService.getCurrentUser();
 
         Location location = locationRepository.findById(id)
@@ -44,7 +45,7 @@ public class LocationService {
             currentUser.getId()
         );
         
-        return LocationResponse.from(location);
+        return LocationDetailsResponse.from(location);
     }
 
     public List<LocationResponse> getAllLocations() {
@@ -89,5 +90,49 @@ public class LocationService {
 
         Location savedLocation = locationRepository.save(location);
         return LocationResponse.from(savedLocation);
+    }
+
+    public LocationDetailsResponse updateLocation(
+        Long id, 
+        CreateLocationRequest req
+    ) {
+        User currentUser = authService.getCurrentUser();
+
+        Location location = locationRepository
+            .findByIdAndCampaignUser(id, currentUser)
+            .orElseThrow(() -> new ResourceNotFoundException("Location"));
+
+        location.setName(req.name());
+        location.setDescription(req.description());
+        location.setType(req.type());
+        location.setStatus(req.status());
+
+        Location savedLocation = locationRepository.save(location);
+
+        return LocationDetailsResponse.from(savedLocation);
+    }
+
+    public void deleteLocation(Long id) {
+        User currentUser = authService.getCurrentUser();
+
+        Location location = locationRepository
+            .findByIdAndCampaignUser(id, currentUser)
+            .orElseThrow(() -> new ResourceNotFoundException("Location"));
+
+        locationRepository.delete(location);
+    }
+
+    public LocationDetailsResponse saveNotesById(Long id, String notes) {
+        User currentUser = authService.getCurrentUser();
+
+        Location location = locationRepository
+            .findByIdAndCampaignUser(id, currentUser)
+            .orElseThrow(() -> new ResourceNotFoundException("Location"));
+
+        location.setNotes(notes);
+
+        Location savedLocation = locationRepository.save(location);
+
+        return LocationDetailsResponse.from(savedLocation);
     }
 }
