@@ -1,5 +1,6 @@
 package com.questbase.backend.location;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -106,6 +107,7 @@ public class LocationService {
         location.setDescription(req.description());
         location.setType(req.type());
         location.setStatus(req.status());
+        location.setUpdatedAt(LocalDateTime.now());
 
         Location savedLocation = locationRepository.save(location);
 
@@ -130,6 +132,7 @@ public class LocationService {
             .orElseThrow(() -> new ResourceNotFoundException("Location"));
 
         location.setNotes(notes);
+        location.setUpdatedAt(LocalDateTime.now());
 
         Location savedLocation = locationRepository.save(location);
 
