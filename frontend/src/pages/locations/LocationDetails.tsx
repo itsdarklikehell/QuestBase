@@ -12,6 +12,7 @@ import Loader from "@/components/ui/Loader/Loader"
 import DetailNotFound from "@/components/states/DetailNotFound/DetailNotFound"
 import DetailPageEditors from "@/components/ui/DetailPageEditors/DetailPageEditors"
 import LocationEditor from "./LocationEditor"
+import useDebouncedSave from "@/hooks/useDebouncedSave"
 
 export default function LocationDetails () {
   const navigate = useNavigate()
@@ -47,6 +48,7 @@ export default function LocationDetails () {
         const l = await res.json()
         setLocation(l)
         setNotes(l.notes)
+        setPersonalNotes(l.personalNotes)
       } else console.error(res)
     } catch (error) {
       console.error("Failed to fetch location: ", error)
@@ -115,16 +117,26 @@ export default function LocationDetails () {
     }
   }, [locationId])
 
-  useEffect(() => {
-    if (owner) {
-      const timeout = setTimeout(() => {
-        if (!notes) return
-        saveNotes(notes)
-      }, 1500)
-
-      return () => clearTimeout(timeout)
+  const savePersonalNotes = useCallback(async (notes: string) => {
+    try {
+      const response = await fetch(`/api/locations/${locationId}/save-personal-notes`, { 
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notes })
+      })
+      if (response.ok) {
+        const notes = await response.json()
+        setPersonalNotes(notes.notes)
+      } else {
+        console.error(response)
+      }
+    } catch (error) {
+      console.error("Failed to save personal location notes: ", error)
     }
-  }, [notes, saveNotes, owner])
+  }, [locationId])
+
+  useDebouncedSave(notes, saveNotes, owner)
+  useDebouncedSave(personalNotes, savePersonalNotes)
 
   const dropdownOptions: DetailDropdownOption[] = [
     // { icon: <BookPlus/>, text: "Add to Quest" }

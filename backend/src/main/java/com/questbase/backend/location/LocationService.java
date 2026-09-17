@@ -14,6 +14,8 @@ import com.questbase.backend.exception.ResourceNotFoundException;
 import com.questbase.backend.location.dto.CreateLocationRequest;
 import com.questbase.backend.location.dto.LocationDetailsResponse;
 import com.questbase.backend.location.dto.LocationResponse;
+import com.questbase.backend.notes.location.LocationNotes;
+import com.questbase.backend.notes.location.LocationNotesRepository;
 
 @Service 
 public class LocationService {
@@ -22,17 +24,20 @@ public class LocationService {
     private final CampaignAccessService campaignAccessService;
     private final CampaignRepository campaignRepository;
     private final LocationRepository locationRepository;
+    private final LocationNotesRepository locationNotesRepository;
 
     public LocationService(
         AuthService authService,
         CampaignAccessService campaignAccessService,
         CampaignRepository campaignRepository,
-        LocationRepository locationRepository
+        LocationRepository locationRepository,
+        LocationNotesRepository locationNotesRepository
     ) {
         this.authService = authService;
         this.campaignAccessService = campaignAccessService;
         this.campaignRepository = campaignRepository;
         this.locationRepository = locationRepository;
+        this.locationNotesRepository = locationNotesRepository;
     }
 
     public LocationDetailsResponse getLocationById(Long id) {
@@ -46,7 +51,11 @@ public class LocationService {
             currentUser.getId()
         );
         
-        return LocationDetailsResponse.from(location);
+        LocationNotes personalNotes = locationNotesRepository
+            .findByLocationIdAndUserId(id, currentUser.getId())
+            .orElse(null);
+
+        return LocationDetailsResponse.from(location, personalNotes);
     }
 
     public List<LocationResponse> getAllLocations() {
@@ -111,7 +120,11 @@ public class LocationService {
 
         Location savedLocation = locationRepository.save(location);
 
-        return LocationDetailsResponse.from(savedLocation);
+        LocationNotes personalNotes = locationNotesRepository
+            .findByLocationIdAndUserId(id, currentUser.getId())
+            .orElse(null);
+
+        return LocationDetailsResponse.from(savedLocation, personalNotes);
     }
 
     public void deleteLocation(Long id) {
@@ -136,6 +149,10 @@ public class LocationService {
 
         Location savedLocation = locationRepository.save(location);
 
-        return LocationDetailsResponse.from(savedLocation);
+        LocationNotes personalNotes = locationNotesRepository
+            .findByLocationIdAndUserId(id, currentUser.getId())
+            .orElse(null);
+
+        return LocationDetailsResponse.from(savedLocation, personalNotes);
     }
 }

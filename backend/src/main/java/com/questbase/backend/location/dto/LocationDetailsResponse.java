@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import com.questbase.backend.location.Location;
 import com.questbase.backend.location.enums.LocationStatus;
 import com.questbase.backend.location.enums.LocationType;
+import com.questbase.backend.notes.location.LocationNotes;
 
 public record LocationDetailsResponse (
     Long id,
@@ -14,11 +15,15 @@ public record LocationDetailsResponse (
     LocationType type,
     LocationStatus status,
     String notes,
+    String personalNotes,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,
     Long campaignId
 ) {
-    public static LocationDetailsResponse from(Location location) {
+    public static LocationDetailsResponse from(
+        Location location, 
+        LocationNotes personalNotes
+    ) {
         return new LocationDetailsResponse(
             location.getId(),
             location.getParentId(), 
@@ -26,7 +31,8 @@ public record LocationDetailsResponse (
             location.getDescription(), 
             location.getType(), 
             location.getStatus(), 
-            location.getNotes(), 
+            location.getNotes(),
+            personalNotes.getNotes(),
             location.getCreatedAt(), 
             location.getUpdatedAt(),
             location.getCampaign().getId()

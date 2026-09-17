@@ -18,6 +18,7 @@ export interface LocationDetails {
   type: string,
   status: string
   notes: string,
+  personalNotes: string
   createdAt: string,
   updatedAt: string,
   campaignId: number

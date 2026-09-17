@@ -15,6 +15,9 @@ import com.questbase.backend.location.dto.CreateLocationRequest;
 import com.questbase.backend.location.dto.LocationDetailsResponse;
 import com.questbase.backend.location.dto.LocationResponse;
 import com.questbase.backend.location.dto.SaveLocationNotesRequest;
+import com.questbase.backend.notes.location.LocationNotesService;
+import com.questbase.backend.notes.location.dto.CreateLocationNotesRequest;
+import com.questbase.backend.notes.location.dto.LocationNotesResponse;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,11 +28,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class LocationController {
 
     private final LocationService locationService;
+    private final LocationNotesService locationNotesService;
 
     public LocationController(
-        LocationService locationService
+        LocationService locationService,
+        LocationNotesService locationNotesService
     ) {
         this.locationService = locationService;
+        this.locationNotesService = locationNotesService;
     }
 
     @GetMapping("/{id}")
@@ -72,5 +78,13 @@ public class LocationController {
         @RequestBody SaveLocationNotesRequest request
     ) {
         return locationService.saveNotesById(id, request.notes());
-    } 
+    }
+
+    @PatchMapping("/{id}/save-personal-notes")
+    public LocationNotesResponse saveLocationPersonalNotes(
+        @PathVariable Long id,
+        @RequestBody CreateLocationNotesRequest request
+    ) {
+        return locationNotesService.saveLocationNotes(id, request);
+    }
 }
