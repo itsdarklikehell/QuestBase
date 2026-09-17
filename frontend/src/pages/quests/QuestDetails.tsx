@@ -17,6 +17,7 @@ import { UserPlus } from "lucide-react"
 import QuestNpcEditor, { QuestNpcEditorAction } from "../npcs/QuestNpcEditor"
 import { CampaignMemberRole } from "@/types/api/campaignMember"
 import DetailPageEditors from "@/components/ui/DetailPageEditors/DetailPageEditors";
+import useDebouncedSave from "@/hooks/useDebouncedSave"
 
 export default function QuestDetails () {
   const { questId } = useParams()
@@ -96,17 +97,6 @@ export default function QuestDetails () {
     }
   }, [questId])
 
-  useEffect(() => {
-    if (owner) {
-      const timeout = setTimeout(() => {
-        if (!notes) return
-        saveNotes(notes)
-      }, 1500)
-
-      return () => clearTimeout(timeout)
-    }
-  }, [notes, saveNotes, owner])
-
   const savePersonalNotes = useCallback(async (notes: string) => {
     try {
       const response = await fetch(`/api/quests/${questId}/save-personal-notes`, { 
@@ -125,14 +115,8 @@ export default function QuestDetails () {
     }
   }, [questId])
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (!personalNotes) return
-      savePersonalNotes(personalNotes)
-    }, 1500)
-
-    return () => clearTimeout(timeout)
-  }, [personalNotes, savePersonalNotes, owner])
+  useDebouncedSave(notes, saveNotes, owner)
+  useDebouncedSave(personalNotes, savePersonalNotes)
 
   const updateQuest = async (
     id: number, 
