@@ -18,6 +18,8 @@ import Players from "./pages/players/Players";
 import Invite from "./pages/invite/Invite";
 import Locations from "./pages/locations/Locations";
 import LocationDetails from "./pages/locations/LocationDetails";
+import Characters from "./pages/characters/Characters";
+import Items from "./pages/items/Items";
 // import NotFound from "./pages/NotFound";
 
 const App: React.FC = () => {
@@ -42,8 +44,10 @@ const App: React.FC = () => {
           >
             <Route path="/campaigns" element={<Campaigns />}/>
             {/* <Route path="/codex/*" element={<Codex />} /> */}
+            <Route path="/characters" element={<Characters/>} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/locations" element={<Locations />}/>
+            <Route path="/items" element={<Items/>} />
+            <Route path="/locations" element={<Locations />} />
             <Route path="/locations/:locationId" element={<LocationDetails />} />
             <Route path="/npcs" element={<Npcs />} />
             <Route path="/npcs/:npcId" element={<NpcsDetails />} />
