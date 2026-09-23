@@ -3,7 +3,7 @@ import { HashLink } from "react-router-hash-link";
 import QBLogo from "@/assets/qb-logo.png"
 import styles from "./Navigation.module.css"
 import { useAuth } from "@/context/AuthContext"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import ProfilePicture from "@/assets/imgs/profiles/default.png"
 import MenuDropdown from "../MenuDropdown/MenuDropdown";
 import { ChartBar, LogOut, Map, Settings } from "lucide-react";
@@ -11,8 +11,13 @@ import { ChartBar, LogOut, Map, Settings } from "lucide-react";
 export default function Navigation () {
   const navigate = useNavigate()
   const { isAuthenticated, logout, user } = useAuth()
+  // For desktop viewing:
+  const triggerRef = useRef<HTMLDivElement | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [accountMenuOpen, setAccountMenuOpen] = useState(false)
+  // For mobile viewing:
+  const mobileTriggerRef = useRef<HTMLButtonElement | null>(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
   const redirectToLogin = () => {
     navigate("/login")
   }
@@ -23,27 +28,35 @@ export default function Navigation () {
         <img className={styles.logo} src={QBLogo} alt="QuestBase" />
         <h1>Quest<span>Base</span></h1>
       </Link>
-      {/* Desktop Links */}
+
+      {/* DESKTOP VIEWING */}
+
       <div className={styles.navigation}>
         <HashLink smooth to="/#mission">Mission</HashLink>
         <HashLink smooth to="/#features">Features</HashLink>
         <HashLink smooth to="/#contact">Contact</HashLink>
         {/* <HashLink smooth to="/#support">Support</HashLink> */}
       </div>
+
       <div className={styles.navigation}>
         {isAuthenticated 
           ? <>
-              <div className={styles.profile_picture_wrapper}>
+              <div
+                ref={triggerRef} 
+                className={styles.profile_picture_wrapper}
+              >
                 <img 
                   src={ProfilePicture} 
                   alt="default profile picture"
                   className={styles.profile_picture} 
-                  onClick={() => setAccountMenuOpen(!accountMenuOpen)}
+                  onClick={() => setMenuOpen(!menuOpen)}
                   style={{ transform: "translateY(-5px) translateX(4px)" }}
                 />
               </div>
               <MenuDropdown
-                open={accountMenuOpen}
+                open={menuOpen}
+                onClose={() => setMenuOpen(false)}
+                triggerRef={triggerRef}
                 textAlign="left"
                 style={{ right: "10px"}}
                 children={
@@ -53,7 +66,7 @@ export default function Navigation () {
                         src={ProfilePicture} 
                         alt="default profile picture"
                         className={styles.profile_picture} 
-                        onClick={() => setAccountMenuOpen(!accountMenuOpen)}
+                        onClick={() => setMenuOpen(!menuOpen)}
                       />
                       <div>
                         <p className={styles.user_display_name}>{user?.displayName}</p>
@@ -74,32 +87,37 @@ export default function Navigation () {
                       <p>Settings</p>
                     </Link>
                     <hr />
-                    <Link 
-                      onClick={() => logout(redirectToLogin)} to="#"
-                    >
+                    <Link onClick={() => logout(redirectToLogin)} to="#">
                       <LogOut/>
                       <p>Logout</p>
                     </Link>
                   </>
                 }
-              ></MenuDropdown>
+              />
             </>
           : <Link to="/login">Login</Link>
         }
       </div>
+
+      {/* MOBILE VIEWING */}
+
       {/* Hamburger */}
       <button
-        className={`${styles.hamburger} ${menuOpen ? styles.open : ""}`}
-        onClick={() => setMenuOpen(!menuOpen)}
+        ref={mobileTriggerRef}
+        className={`${styles.hamburger} ${mobileMenuOpen ? styles.open : ""}`}
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         aria-label="Toggle menu"
       >
         <span></span>
         <span></span>
         <span></span>
       </button>
+
       {/* Mobile Menu */}
       <MenuDropdown
-        open={menuOpen}
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        triggerRef={mobileTriggerRef}
         style={{ top: 0, marginTop: 0, paddingTop: "50px" }}
         mobile={true}
         textAlign="right"
@@ -123,6 +141,7 @@ export default function Navigation () {
         }
       >
       </MenuDropdown>
+
     </header>
   )
 }

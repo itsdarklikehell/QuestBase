@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom"
 import styles from "./DashboardNavigation.module.css"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useCampaign } from "@/context/campaign/useCampaign"
 import ProfilePicture from "@/assets/imgs/profiles/default.png"
 import { useAuth } from "@/context/AuthContext"
@@ -13,6 +13,8 @@ const DashboardNavigation = () => {
   const { logout, user } = useAuth()
   const { campaigns, activeCampaign, setActiveCampaignId } = useCampaign()
   const [ showDropdown, setShowDropdown ] = useState<boolean>(false)
+
+  const triggerRef = useRef<HTMLDivElement | null>(null)
   const [ accountMenuOpen, setAccountMenuOpen ] = useState(false)
 
   const pages = [
@@ -39,7 +41,10 @@ const DashboardNavigation = () => {
             <ArrowLeft className={styles.qb_arrow}/>
             <Link to="/"><h1>Quest<span>Base</span></h1></Link>
           </div>
-          <div className={styles.dashboard_user_navigation}>
+          <div
+            ref={triggerRef} 
+            className={styles.dashboard_user_navigation}
+          >
             <img 
               src={ProfilePicture} 
               alt="default profile picture"
@@ -50,6 +55,8 @@ const DashboardNavigation = () => {
           </div>
           <MenuDropdown
             open={accountMenuOpen}
+            onClose={() => setAccountMenuOpen(false)}
+            triggerRef={triggerRef}
             style={{ 
               top: 0,
               left: '100%', 
@@ -63,6 +70,7 @@ const DashboardNavigation = () => {
                     src={ProfilePicture} 
                     alt="default profile picture"
                     className={styles.profile_picture}
+                    style={{ cursor: "default" }}
                   />
                   <div>
                     <p className={styles.user_display_name}>{user?.displayName}</p>
