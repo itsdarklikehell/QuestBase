@@ -163,11 +163,17 @@ const Campaigns = () => {
                         <div className={styles.campaign_actions}>
                           <Edit
                             className={styles.campaign_edit}
-                            onClick={() => openEditor(campaign)} 
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              openEditor(campaign)
+                            }} 
                           />
                           <Trash2 
                             className={styles.campaign_trash}
-                            onClick={() => openDeletionPopup(campaign)}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              openDeletionPopup(campaign)
+                            }}
                           />
                         </div>
                       }
