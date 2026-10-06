@@ -20,11 +20,13 @@ import Locations from "./pages/locations/Locations";
 import LocationDetails from "./pages/locations/LocationDetails";
 import Characters from "./pages/characters/Characters";
 import Items from "./pages/items/Items";
+import { ThemeToggle } from "./components/ThemeToggle/ThemeToggle";
 // import NotFound from "./pages/NotFound";
 
 const App: React.FC = () => {
   return (
     <Router>
+      <ThemeToggle />
       <Routes>
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
