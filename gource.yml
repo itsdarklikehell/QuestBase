@@ -1,0 +1,12 @@
+# Gource configuration for QuestBase
+[gource]
+title = "QuestBase"
+auto-skip-seconds = 0.5
+file-idle-time = 0
+loop = false
+seconds-per-day = 0.2
+date-format = "%Y-%m-%d"
+highlight-users = true
+max-files = 0
+max-lag = 0.3
+dir-name-depth = 1
